@@ -1,0 +1,45 @@
+<!-- client/main.html -->
+<head>
+  <title>Loan Management</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+  {{> loginButtons}}
+  
+  {{#if isAdmin}}
+    <h2>Admin Dashboard</h2>
+    {{> dashboard}}
+  {{else}}
+    {{#if currentUser}}
+      {{#if isInRole 'lender'}}
+        <h2>Lender Dashboard</h2>
+      {{else}}
+        <h2>Borrower Dashboard</h2>
+        {{> dashboard}}
+      {{/if}}
+    {{/if}}
+  {{/if}}
+
+  {{!-- Placeholder for the body template --}}
+  <div>
+    {{welcomeMessage}}
+  </div>
+
+  <template name="dashboard">
+    <button id="requestLoan" {{#unless isInRole 'borrower'}}disabled{{/unless}}>Request Loan</button>
+    <ul>
+      {{#each loans}}
+        <li>
+          Loan Amount: ${{amount}} - Status: {{status}} - Created At: {{formatDate createdAt}}
+          {{#if isInRole 'lender'}}
+            {{#if (eq status 'pending')}}
+              <button id="confirmPayment" data-id="{{_id}}">Confirm Payment</button>
+            {{/if}}
+          {{/if}}
+        </li>
+      {{/each}}
+    </ul>
+  </template>
+</body>
